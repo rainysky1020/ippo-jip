@@ -77,6 +77,12 @@ h2.sec.k-pair .t { background: var(--purple); }
 h2.sec.k-read .t { background: var(--coral); }
 h2.sec.k-corner .t { background: var(--navy); }
 h2.sec.k-review .t { background: var(--navy); }
+h2.sec.k-kanji .t { background: #dae9b3; color: var(--navy); }   /* 원본 공통 연두 */
+h2.sec.k-plus .t { background: var(--coral); }
+/* 권별 표제지 색 (원본 표지색): 1 하늘 · 2 민트 · 3 연어 · 4 라벤더, 종합문제 표제지는 갈색 */
+.b1 { --vol: #74cdde; } .b2 { --vol: #93d2ba; } .b3 { --vol: #f9b4a6; } .b4 { --vol: #b4b0d7; }
+.opener { background: var(--vol, var(--sky)); }
+.opener:not(:has(.num)) { background: #cca286; }
 .kicker { margin: 0 0 4px 6px; font-size: 14px; font-weight: 800; color: var(--navy); }
 .kicker + h2.sec { margin-top: 0; }
 
