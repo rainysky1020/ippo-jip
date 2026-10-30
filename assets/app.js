@@ -87,6 +87,7 @@
       });
       window.cipPlayer.scan();
       if (window.jipApply) window.jipApply();
+      if (window.jipQuiz) window.jipQuiz(view);
       return signed(imgs.concat(Object.keys(auds))).then(function () {
         view.querySelectorAll('img[data-img]').forEach(function (i) {
           if (urlCache[i.dataset.img]) i.src = urlCache[i.dataset.img].url;

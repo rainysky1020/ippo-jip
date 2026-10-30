@@ -14,8 +14,10 @@
       var t = (h && h !== el ? h.textContent.replace(el.textContent, '') : '').trim();
       return (t ? t + ' · ' : '') + el.textContent;
     }
-    var z = el.querySelector('.hz,.zh,.py');
-    return (z || el).textContent.trim().slice(0, 40);
+    // 입뽀입뽀: 루비(발음·후리가나)와 한국어 해석을 뺀 일본어만
+    var c = el.cloneNode(true);
+    c.querySelectorAll('rt, .ko, .spk, .who, .ic').forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\s+/g, ' ').trim().slice(0, 40);
   }
 
   function tick() {
