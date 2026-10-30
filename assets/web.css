@@ -183,6 +183,13 @@ ol.qz-pick.picks > li { padding: 6px; margin: 0; border-radius: 12px; }
 .ox button.on { background: var(--charcoal); color: #fff; border-color: var(--charcoal); }
 .ox.qz-ok button.on { background: #2e9e4f; border-color: #2e9e4f; }
 .ox.qz-ng button.on { background: #d14b4b; border-color: #d14b4b; }
+.pick { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; white-space: nowrap; }
+.pick .pk-b, .pick .pk-s { color: #1d6fb8; padding: 0 2px; }
+.pick button { font: 500 16px var(--ja); border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 1px 10px; cursor: pointer; color: var(--ink); }
+.pick button:hover { background: var(--accent-tint); border-color: var(--accent-soft); }
+.pick button.on { background: var(--charcoal); border-color: var(--charcoal); color: #fff; }
+.pick.qz-ok button.on { background: #2e9e4f; border-color: #2e9e4f; }
+.pick.qz-ng button.on { background: #d14b4b; border-color: #d14b4b; }
 .qz-bar { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; padding-top: 12px; border-top: 1px dashed var(--line); }
 .qz-bar button { border: 0; border-radius: 999px; padding: 8px 16px; font: 700 13px var(--ko); cursor: pointer; }
 .qz-check { background: var(--accent); color: #fff; }

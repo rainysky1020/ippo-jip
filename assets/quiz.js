@@ -3,6 +3,7 @@
 //   .blank[data-ans]   빈칸 → 짧은 입력칸 (표 칸 td, .write 줄 등 data-ans가 붙은 다른 요소도 입력칸이 됨)
 //   ol.choices[data-ans="2"]  보기 고르기 (1부터, 여러 개면 data-ans="2,4")
 //   .ox[data-ans="o|x"]       ○× 고르기
+//   .pick[data-ans="のに"]   문장 속 괄호 고르기: <span class="pick" data-ans="のに">[ ので / のに ]</span> → 보기마다 단추
 //   [data-free]        정해진 답이 없는 문제 → ‘모범 답안’만 보여 줌
 //   [data-set]         순서 없는 목록 답 (예: 1그룹 동사 모두 쓰기) → 낱말 묶음이 같으면 맞음
 // 쪽(section)마다 ‘정답 확인’ 단추. 채점은 띄어쓰기·문장부호를 무시하고, 가나만으로 쓴 답도 맞게 본다.
@@ -17,7 +18,7 @@
     return a.map(norm).filter(Boolean);
   }
   // 입력칸이 되는 것: 보기 고르기·○× 말고 data-ans가 붙은 모든 요소 (.ans 답 줄, .blank 빈칸, 표 칸 td, .write 줄 …)
-  var INPUTS = '[data-ans]:not(ol):not(.ox)';
+  var INPUTS = '[data-ans]:not(ol):not(.ox):not(.pick)';
   function shown(el) { return (el.dataset.ans || '').split('|')[0]; }
 
   function setup(root) {
@@ -41,6 +42,14 @@
     root.querySelectorAll('ol.choices[data-ans]').forEach(function (ol) {
       ol.classList.add('qz-pick');
       [].forEach.call(ol.children, function (li, k) { li.dataset.k = k + 1; li.tabIndex = 0; li.setAttribute('role', 'button'); });
+    });
+    root.querySelectorAll('.pick[data-ans]').forEach(function (el) {     // 괄호 속 보기 → 단추 (괄호는 그대로 보임)
+      if (el.querySelector('button')) return;
+      var t = el.textContent.trim(), open = t.charAt(0), close = t.charAt(t.length - 1);
+      var opts = t.slice(1, -1).split(/[\/／]/).map(function (x) { return x.trim(); }).filter(Boolean);
+      el.innerHTML = '<span class="pk-b">' + open + '</span>' + opts.map(function (o) {
+        return '<button type="button" data-v="' + o.replace(/"/g, '&quot;') + '">' + o + '</button>';
+      }).join('<span class="pk-s">/</span>') + '<span class="pk-b">' + close + '</span>';
     });
     root.querySelectorAll('.ox[data-ans]').forEach(function (el) {
       if (el.querySelector('button')) return;
@@ -74,6 +83,10 @@
         ok = got.length === want.length && want.every(function (k) { return got.indexOf(k) >= 0; });
         el.querySelectorAll('li').forEach(function (li) { li.classList.toggle('right', want.indexOf(li.dataset.k) >= 0); });
         mark(el, ok, null);
+      } else if (el.matches('.pick')) {
+        var pb = el.querySelector('button.on');
+        ok = !!pb && el.dataset.ans.split('|').indexOf(pb.dataset.v) >= 0;
+        mark(el, ok, ok ? null : shown(el));
       } else if (el.matches('.ox')) {
         var b = el.querySelector('button.on');
         ok = !!b && b.dataset.v === el.dataset.ans;
@@ -96,7 +109,7 @@
     sec.querySelectorAll('.qz-ok, .qz-ng, .qz-free').forEach(function (el) { el.classList.remove('qz-ok', 'qz-ng', 'qz-free'); });
     sec.querySelectorAll('.qz-sol').forEach(function (el) { el.remove(); });
     sec.querySelectorAll('input.qz-in').forEach(function (i) { i.value = ''; });
-    sec.querySelectorAll('.qz-pick li.on, .qz-pick li.right, .ox button.on').forEach(function (el) { el.classList.remove('on', 'right'); });
+    sec.querySelectorAll('.qz-pick li.on, .qz-pick li.right, .ox button.on, .pick button.on').forEach(function (el) { el.classList.remove('on', 'right'); });
     sec.querySelector('.qz-score').textContent = '';
   }
 
@@ -107,6 +120,8 @@
       else [].forEach.call(li.parentNode.children, function (x) { x.classList.toggle('on', x === li); });
       return;
     }
+    var pk = ev.target.closest('.pick[data-ans] button');
+    if (pk) { pk.parentNode.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b === pk); }); return; }
     var ob = ev.target.closest('.ox[data-ans] button');
     if (ob) { ob.parentNode.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b === ob); }); return; }
     var c = ev.target.closest('.qz-check');
