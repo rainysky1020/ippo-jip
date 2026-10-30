@@ -150,8 +150,20 @@ main.index { max-width: 860px; margin: 0 auto; padding: 22px var(--sp) 10px; }
 /* ================= 연습문제 풀이 (quiz.js) ================= */
 input.qz-in { font: 500 17px/1.6 var(--ja); border: 0; border-bottom: 2px solid var(--accent-soft); background: transparent; padding: 2px 4px; min-width: 0; flex: 1; outline: none; color: var(--ink); }
 input.qz-in:focus { border-bottom-color: var(--accent); background: var(--accent-tint); }
-.blank > input.qz-in { width: 6em; flex: none; font-size: 15px; padding: 0 2px; }
-td > input.qz-in, .write > input.qz-in { width: 100%; font-size: 15px; }
+.blank > input.qz-in { flex: none; font-size: 15px; padding: 0 2px; }
+/* 입력칸이 들어간 칸은 원래 밑줄·최소 너비를 없애 줄이 두 번 그어지지 않게 */
+.blank.qz-on, .write.qz-on, span.qz-on { border-bottom: 0 !important; border: 0 !important; min-width: 0 !important; width: auto !important; height: auto !important; background: none; }
+.write.qz-on { min-height: 0; margin: 0 0 4px; }
+td > input.qz-in, .write > input.qz-in, .body.qz-on > input.qz-in { max-width: 100%; }
+input.qz-in { max-width: 100%; box-sizing: border-box; }
+input.qz-free-in { border-bottom-style: dashed; }
+/* 따라 쓰기 칸 (write.js) */
+.wr-cell { position: relative; touch-action: none; }
+canvas.wr { position: absolute; inset: 0; cursor: crosshair; touch-action: none; }
+.wr-cell:hover { box-shadow: inset 0 0 0 2px var(--accent-soft); }
+.wr-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 6px 0 14px; font-size: 13px; color: var(--muted); }
+.wr-bar button { border: 0; border-radius: 999px; padding: 6px 14px; font: 700 12.5px var(--ko); background: #eef2f4; color: var(--charcoal); cursor: pointer; }
+td > input.qz-in, .write > input.qz-in { font-size: 15px; }
 td.qz-ok, .write.qz-ok { background: #e6f6ea; } td.qz-ng, .write.qz-ng { background: #fdecec; } td.qz-free, .write.qz-free { background: #fff8e1; }
 .ans.qz-ok, .blank.qz-ok { background: #e6f6ea; }
 .ans.qz-ng, .blank.qz-ng { background: #fdecec; }

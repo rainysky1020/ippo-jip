@@ -4,6 +4,7 @@
 //   ol.choices[data-ans="2"]  보기 고르기 (1부터, 여러 개면 data-ans="2,4")
 //   .ox[data-ans="o|x"]       ○× 고르기
 //   [data-free]        정해진 답이 없는 문제 → ‘모범 답안’만 보여 줌
+//   [data-set]         순서 없는 목록 답 (예: 1그룹 동사 모두 쓰기) → 낱말 묶음이 같으면 맞음
 // 쪽(section)마다 ‘정답 확인’ 단추. 채점은 띄어쓰기·문장부호를 무시하고, 가나만으로 쓴 답도 맞게 본다.
 (function () {
   function norm(s) {
@@ -22,11 +23,19 @@
   function setup(root) {
     root = root || document;
     root.querySelectorAll(INPUTS).forEach(function (el) {
-      if (el.querySelector('input.qz-in')) return;
+      if (el.querySelector(':scope > input.qz-in')) return;
       var i = document.createElement('input');
       i.className = 'qz-in'; i.type = 'text'; i.lang = 'ja'; i.autocomplete = 'off'; i.spellcheck = false;
       i.setAttribute('aria-label', '답 입력');
-      if (!el.classList.contains('ans')) { i.placeholder = el.textContent.trim(); el.textContent = ''; }   // 빈칸·표 칸·.write 줄은 입력칸만 (있던 글자 ★ 등은 흐린 안내 글자로)
+      if (!el.classList.contains('ans')) {
+        i.placeholder = el.textContent.trim(); el.textContent = '';   // 빈칸·표 칸·.write 줄은 입력칸만 (있던 글자 ★ 등은 흐린 안내 글자로)
+        // 칸 너비 = 가장 긴 정답 길이 (전각 1, 반각 0.6) + 여유. 표 칸·줄보다 넓어지지는 않는다.
+        var n = Math.max.apply(null, (el.dataset.ans || '').split('|').map(function (a) {
+          return [].reduce.call(a.replace(/\s/g, ''), function (s, ch) { return s + (ch.charCodeAt(0) > 0xff ? 1 : 0.6); }, 0);
+        }));
+        i.style.width = 'calc(' + Math.max(2, n + 1.2).toFixed(1) + 'em + 8px)';
+      }
+      el.classList.add('qz-on');
       el.appendChild(i);
     });
     root.querySelectorAll('ol.choices[data-ans]').forEach(function (ol) {
@@ -70,8 +79,11 @@
         ok = !!b && b.dataset.v === el.dataset.ans;
         mark(el, ok, ok ? null : (el.dataset.ans === 'o' ? '○' : '×'));
       } else {
-        var v = norm((el.querySelector('input.qz-in') || {}).value);
-        ok = !!v && answers(el).indexOf(v) >= 0;
+        var raw = (el.querySelector(':scope > input.qz-in') || {}).value || '', v = norm(raw);
+        if (el.hasAttribute('data-set')) {      // 순서 없는 목록 답 (data-set): 、・, 공백으로 나눈 낱말 묶음이 같으면 맞음
+          var bag = function (t) { return t.split(/[、,，・\s]+/).map(norm).filter(Boolean).sort().join('|'); };
+          ok = !!v && el.dataset.ans.split('|').some(function (a) { return bag(a.replace(/／/g, '|').split('|')[0]) === bag(raw); });
+        } else ok = !!v && answers(el).indexOf(v) >= 0;
         if (free) { mark(el, ok ? true : null, ok ? null : shown(el)); if (!ok) return; }
         else mark(el, ok, ok ? null : shown(el));
       }

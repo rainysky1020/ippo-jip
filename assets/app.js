@@ -88,6 +88,7 @@
       window.cipPlayer.scan();
       if (window.jipApply) window.jipApply();
       if (window.jipQuiz) window.jipQuiz(view);
+      if (window.jipWrite) setTimeout(function () { window.jipWrite(view); }, 50);   // 글꼴·그림 배치 뒤 칸 크기를 잰다
       return signed(imgs.concat(Object.keys(auds))).then(function () {
         view.querySelectorAll('img[data-img]').forEach(function (i) {
           if (urlCache[i.dataset.img]) i.src = urlCache[i.dataset.img].url;
