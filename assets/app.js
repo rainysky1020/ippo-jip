@@ -137,16 +137,27 @@
       document.body.classList.toggle('cs-teacher', cs && me.teacher);
       document.title = parts.concat(cs ? 'Speedy 입뽀입뽀' : '입뽀입뽀 JIP').join(' · ');
       window.scrollTo(0, 0);
-      if (!me.teacher) view.querySelectorAll('.stages a.stage').forEach(function (a) {
-        var st = +(a.className.match(/\bs(\d)\b/) || [])[1];
-        if (me.stages.indexOf(st) < 0) { a.classList.add('locked'); a.insertAdjacentHTML('beforeend', '<span class="lock">권한 없음</span>'); }
-      });
-      if (!me.teacher) view.querySelectorAll('.cgroup[data-st]').forEach(function (g) {   // 신촌: 학생에게는 자기 반(평일/주말)만
-        g.hidden = !g.dataset.st.split(',').some(function (n) { return me.stages.indexOf(+n) >= 0; });
-      });
-      var home = view.querySelector('main.index');                                       // 두 교재를 다 보는 회원: 서로 오가는 길
-      if (home && path === 'index.html' && hasCS()) home.insertAdjacentHTML('beforeend', '<a class="xbook cs" href="cs/index.html"><small>신촌캠퍼스</small><b>Speedy 입뽀입뽀</b> 입문·초급 교재 ›</a>');
-      if (home && path === 'cs/index.html' && hasJIP()) home.insertAdjacentHTML('beforeend', '<a class="xbook" href="../index.html"><small>종로·강남</small><b>입뽀입뽀</b> 1~4권 교재 ›</a>');
+      onlyMine(view);
+      var home = view.querySelector('main.index');
+      if (home && path === 'index.html' && hasCS()) {              // 전체 첫 화면: 종로·강남(입뽀입뽀 1~4권) 아래에 신촌(입문/초급)
+        var jst = home.querySelector('.stages');
+        if (jst) jst.insertAdjacentHTML('beforebegin', '<h2 class="campus-h"><span class="en">JONGNO · GANGNAM · 입뽀입뽀</span>종로 · 강남</h2>');
+        loadPage('cs/index.html').then(function (t) {
+          var box = document.createElement('div');
+          box.innerHTML = t;
+          var lv = box.querySelector('.cs-levels');
+          if (!lv || view.dataset.path !== 'index.html' || home.querySelector('.cs-levels')) return;
+          var wrap = document.createElement('div');
+          wrap.className = 'cs'; wrap.appendChild(lv);
+          home.appendChild(wrap);
+          onlyMine(wrap);
+        });
+      }
+      if (home && path === 'cs/index.html' && hasJIP()) home.insertAdjacentHTML('beforeend', '<a class="xbook" href="../index.html"><small>종로·강남</small><b>입뽀입뽀</b> 1~4권 · 전체 첫 화면 ›</a>');
+      if (!me.teacher && /^cs\/(in|cho)\.html$/.test(path)) {      // 학생: 고를 반이 하나뿐이면 바로 그 반 목차로
+        var one = [].filter.call(view.querySelectorAll('.lvl-pick a.stage'), function (a) { return !a.hidden; });
+        if (one.length === 1) { location.replace(hashOf(resolve(path, one[0].getAttribute('href')))); return; }
+      }
       window.cipPlayer.scan();
       if (window.jipApply) window.jipApply();
       if (window.jipQuiz) window.jipQuiz(view);
@@ -166,6 +177,19 @@
         + '<p class="msg">잠시 뒤 다시 시도해 주세요. 계속되면 관리자에게 문의하세요.</p>'
         + '<p><a class="btn" href="#/">처음으로</a></p></div></div>';
     });
+  }
+
+  // 학생에게는 볼 수 있는 교재 카드만 남긴다 (선생님·관리자는 담당 캠퍼스 교재 모두).
+  //   a.stage.sN: 그 권·반 / [data-st="5,7"]: 그 단계 중 하나라도 있으면 / .staff-only: 선생님·관리자만
+  function onlyMine(root) {
+    if (me.teacher) return;
+    var has = function (list) { return list.some(function (n) { return me.stages.indexOf(+n) >= 0; }); };
+    root.querySelectorAll('.stages a.stage').forEach(function (a) {
+      var st = (a.className.match(/\bs(\d)\b/) || [])[1];
+      if (st && !has([st])) a.hidden = true;
+    });
+    root.querySelectorAll('[data-st]').forEach(function (el) { if (!has(el.dataset.st.split(','))) el.hidden = true; });
+    root.querySelectorAll('.staff-only').forEach(function (el) { el.hidden = true; });
   }
 
   function addUserMenu() {

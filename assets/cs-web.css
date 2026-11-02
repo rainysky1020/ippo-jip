@@ -26,6 +26,7 @@ body.cs-on .pl-bar i { background: #94a9c4; }
 .cs h2.cg-h { display: flex; align-items: baseline; gap: 10px; margin: 26px 2px 0; font-size: 20px; font-weight: 900; color: #1f2a3a; }
 .cs h2.cg-h .en { font: 800 11px var(--latin); letter-spacing: .3em; color: var(--slate); order: 2; }
 .cs .stages.two { grid-template-columns: repeat(2, 1fr); margin-top: 10px; }
+.cs .stages.lvl-pick { margin-top: 16px; }
 .cs .stage .k { color: var(--slate); }
 .cs .stage .n { font-family: var(--ko); font-size: 40px; letter-spacing: -.02em; }
 .cs .stage::after { background: var(--slate); }
@@ -76,3 +77,5 @@ body.cs-on .pl-bar i { background: #94a9c4; }
   .cs .cs-tbar { top: 96px; margin: 8px 8px 0; }
   .cs .brand .camp { display: none; }
 }
+/* 과정 카드: 반별 범위 (학생에게는 자기 반 것만 남음) */
+.cs .stage.lv .d span:not([hidden]) ~ span:not([hidden])::before { content: " / "; color: var(--muted); font-weight: 400; }

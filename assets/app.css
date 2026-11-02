@@ -137,3 +137,9 @@
 .xbook.cs small { color: #1f2a3a; }
 .stg.cs { flex-wrap: wrap; justify-content: flex-end; max-width: 280px; }
 .gate .hero p.sm { margin-top: 8px; font-size: 12.5px; opacity: .92; }
+/* 전체 첫 화면의 캠퍼스 구역 제목 (관리자·여러 캠퍼스 담당 선생님) */
+.campus-h { display: flex; align-items: baseline; gap: 10px; margin: 26px 2px 0; font-size: 20px; font-weight: 900; color: var(--charcoal); }
+.campus-h .en { order: 2; font: 800 11px var(--latin); letter-spacing: .3em; color: var(--teal-dk); }
+.campus-h + .stages { margin-top: 10px; }
+main.index > .cs .cs-levels h2.cg-h { margin-top: 30px; }
+#view [hidden] { display: none !important; }   /* 학생에게 숨긴 교재 카드 (.stage는 display:flex라 hidden만으로는 안 숨음) */
