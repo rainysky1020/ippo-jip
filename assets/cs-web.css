@@ -1,0 +1,78 @@
+/* Speedy 입뽀입뽀 (신촌) 웹판 화면 틀 — 입뽀입뽀 JIP web.css 위에. 교재 쪽 모양은 cs.css.
+   회원판에서는 신촌 교재 쪽을 보는 동안 app.js가 body에 cs-on을 붙인다. */
+
+body.cs-on, html:has(body.cs-on) { background: #eef1f5; }
+body.cs-on #player { background: #1f2a3a; }
+body.cs-on #player button { background: #34465f; }
+body.cs-on #player #pl-toggle, body.cs-on #player #pl-loop.on { background: #56708f; }
+body.cs-on .pl-bar i { background: #94a9c4; }
+
+.cs .top { background: #1f2a3a; }
+.cs .brand b { color: #94a9c4; font-style: italic; }
+.cs .brand .camp { display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px; background: #94a9c4; color: #1f2a3a; font-size: 11.5px; font-weight: 800; line-height: 20px; vertical-align: 1px; }
+.cs .top .rt-tg[aria-pressed=true] { background: #94a9c4; border-color: #94a9c4; color: #1f2a3a; }
+.cs .chips { background: rgba(238, 241, 245, .94); }
+.cs .chips a { color: var(--slate-dk); }
+.cs .pn a { color: #1f2a3a; }
+
+/* 첫 화면 */
+.cs .cs-hero { background: linear-gradient(135deg, #94a9c4 0%, #7f95b3 100%); }
+.cs .cs-hero::after { content: "JIP"; width: auto; height: auto; border-radius: 0; background: none; right: -10px; bottom: -36px;
+  font: 900 150px/1 var(--latin); letter-spacing: -.04em; color: rgba(255,255,255,.14); }
+.cs .cs-hero .k { color: #1f2a3a; }
+.cs .cs-hero h1 small { display: block; font: italic 800 18px var(--latin); letter-spacing: .04em; color: #1f2a3a; margin-bottom: 2px; }
+.cs .cs-hero.l-cho { background: linear-gradient(135deg, #6f86a6 0%, #56708f 100%); }
+.cs .cs-hero.l-cho .k, .cs .cs-hero.l-cho h1 small { color: #e8eef6; }
+.cs h2.cg-h { display: flex; align-items: baseline; gap: 10px; margin: 26px 2px 0; font-size: 20px; font-weight: 900; color: #1f2a3a; }
+.cs h2.cg-h .en { font: 800 11px var(--latin); letter-spacing: .3em; color: var(--slate); order: 2; }
+.cs .stages.two { grid-template-columns: repeat(2, 1fr); margin-top: 10px; }
+.cs .stage .k { color: var(--slate); }
+.cs .stage .n { font-family: var(--ko); font-size: 40px; letter-spacing: -.02em; }
+.cs .stage::after { background: var(--slate); }
+.cs .stage.s6, .cs .stage.s8 { background: linear-gradient(180deg, #fff 0%, #f3f6fa 100%); }
+.cs .stage.locked { opacity: .55; }
+.cs .cs-note { margin: 12px 2px 0; padding: 10px 14px; border-radius: 12px; background: #fff; border: 1px dashed var(--slate-soft); font-size: 13.5px; color: #4d5665; }
+.cs .cs-note::before { content: "ⓘ "; color: var(--slate); font-weight: 800; }
+
+/* 과정 구성 띠 */
+.cs .tl { margin-top: 10px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px 12px; overflow-x: auto; }
+.cs .tl-row { display: grid; grid-template-columns: 64px minmax(560px, 1fr); align-items: center; gap: 10px; margin: 6px 0; }
+.cs .tl-g { font-size: 13px; font-weight: 800; color: #1f2a3a; }
+.cs .tl-row.head .tl-g { font: 700 10.5px var(--latin); letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+.cs .tl-track { display: grid; grid-template-columns: repeat(18, minmax(0, 1fr)); gap: 3px; }
+.cs .tl-track.nums span { text-align: center; font: 700 11px var(--latin); color: var(--muted); }
+.cs .tl-track.nums span.k { color: #fff; background: #d2434a; border-radius: 6px; }
+.cs .tl .seg { display: flex; align-items: baseline; justify-content: center; gap: 8px; text-decoration: none; border-radius: 10px; padding: 7px 8px; color: #fff; white-space: nowrap; overflow: hidden; }
+.cs .tl .seg small { font: 600 11px var(--latin); color: inherit; opacity: .8; }
+.cs .tl .seg.s5, .cs .tl .seg.s7 { background: #94a9c4; color: #1f2a3a; }
+.cs .tl .seg.s6, .cs .tl .seg.s8 { background: #56708f; }
+.cs .tl .seg.hi { outline: 3px solid #d2434a; outline-offset: 1px; }
+.cs .tl-note { margin: 10px 0 0; font-size: 13px; color: #4d5665; }
+
+/* 과 목록 진도 */
+.cs .lesson .n { color: var(--slate); }
+.cs .lesson .prog { flex: none; font-size: 11.5px; font-weight: 800; border-radius: 999px; padding: 2px 9px; }
+.cs .lesson .prog:empty { display: none; }
+.cs .lesson .prog.seen { background: #eef2f7; color: var(--slate); }
+.cs .lesson .prog.done { background: #e6f6ea; color: #2e7d4f; }
+
+/* 선생님 도구 */
+.cs .cs-tbar { position: sticky; top: 100px; z-index: 18; max-width: 860px; margin: 12px auto 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 14px; background: #1f2a3a; color: #fff; box-shadow: 0 6px 18px rgba(31, 42, 58, .2); }
+.cs .cs-tbar .lb { font-size: 12px; font-weight: 800; letter-spacing: .2em; color: #94a9c4; margin-right: 4px; }
+.cs .cs-tbar button { border: 0; border-radius: 999px; padding: 7px 14px; font: 700 12.5px var(--ko); background: #34465f; color: #fff; cursor: pointer; }
+.cs .cs-tbar button:hover { background: #56708f; }
+.cs .cs-tbar button[data-tact=reveal] { background: #d2434a; }
+
+/* 듣기 단추·연습문제 */
+.cs button.pa { background: #1f2a3a; }
+.cs button.pa::before { border-left-color: #94a9c4; }
+.cs button.pa.playing { background: var(--listen); }
+.cs .qz-bar { border-top-color: var(--line); }
+
+@media (max-width: 640px) {
+  .cs .stages.two { grid-template-columns: 1fr 1fr; }
+  .cs .stage .n { font-size: 32px; }
+  .cs .cs-tbar { top: 96px; margin: 8px 8px 0; }
+  .cs .brand .camp { display: none; }
+}

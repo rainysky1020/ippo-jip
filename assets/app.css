@@ -128,3 +128,12 @@
 .doc.full dt { margin-top: 14px; }
 .legal { margin: -6px 0 0; text-align: center; font-size: 12.5px; color: #8b8380; }
 .legal a { color: #8b8380; }
+
+/* 신촌 캠퍼스(Speedy 입뽀입뽀)와 오가는 길, 과정 단추 */
+.xbook { display: block; margin-top: 16px; padding: 16px 20px; border-radius: 16px; background: #fff; border: 1px solid var(--line); text-decoration: none; font-size: 15px; color: var(--charcoal); }
+.xbook small { display: block; font-size: 12px; color: #8b8380; margin-bottom: 2px; }
+.xbook b { font-weight: 900; margin-right: 4px; }
+.xbook.cs { background: linear-gradient(135deg, #94a9c4, #6f86a6); color: #fff; border: 0; }
+.xbook.cs small { color: #1f2a3a; }
+.stg.cs { flex-wrap: wrap; justify-content: flex-end; max-width: 280px; }
+.gate .hero p.sm { margin-top: 8px; font-size: 12.5px; opacity: .92; }

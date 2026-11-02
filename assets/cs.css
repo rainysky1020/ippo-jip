@@ -1,0 +1,270 @@
+/* Speedy 입뽀입뽀 (신촌 · 입문/초급) — 재조판 스타일 (웹 우선)
+   languageforyou.kr/japanese 회원판에서 입뽀입뽀 JIP의 book.css·web.css와 한 화면에 함께 쓰이므로
+   모든 규칙을 .cs 아래에 둔다. 공용 셸(머리띠·목차·플레이어·연습문제)의 색은 .cs에서 변수만 바꿔 맞춘다.
+   원본 1쪽 = <section class="page" data-src="원본쪽"> 1개. 마크업 규칙은 GUIDE.md. */
+
+.cs {
+  /* 표지(슬레이트 블루) 계열 */
+  --mist: #94a9c4;          /* 표지 바탕 */
+  --slate: #56708f;         /* 강조 */
+  --slate-dk: #3a506d;
+  --slate-tint: #eef2f7;
+  --slate-soft: #cbd6e4;
+  --band: #e7eaef;          /* 원본의 회색 띠 */
+  --band-dk: #c9ced6;
+  --ink: #1d2430;
+  --muted: #6b7380;
+  --rt: #7a8698;
+  --line: #dde3ea;
+  --red: #d2434a;           /* 원본의 빨간 강조 */
+  --gram: #56708f; --listen: #3f8a86; --review: #9a6b3f; --drill: #6b6f86;
+  --ko: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --ja: "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  --latin: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  /* 공용 셸 변수 */
+  --sky: var(--mist); --teal: var(--slate); --teal-dk: var(--slate-dk); --charcoal: #1f2a3a; --bg: #eef1f5;
+  --accent: var(--slate); --accent-dk: var(--slate-dk); --accent-tint: var(--slate-tint); --accent-soft: var(--slate-soft);
+  --purple: var(--slate); --coral: var(--red);
+  font-family: var(--ko); color: var(--ink);
+}
+.cs * { box-sizing: border-box; }
+
+/* ---------- 입뽀입뽀 JIP book.css와 한 화면에 있을 때 새어 드는 속성 끄기 (회원판 SPA는 두 CSS를 함께 읽는다) ---------- */
+.cs .page img.fig { border-radius: 0; }
+.cs .opener { border-radius: 0; }
+.cs h2.sec .t { background: none; border: 0; border-radius: 0; padding: 0; box-shadow: none; color: inherit; }
+.cs h3.sub { color: inherit; }
+.cs p.note { font-size: inherit; }
+.cs p.q { display: block; font-size: 15.5px; }
+.cs p.q .qn { display: inline; min-width: 0; height: auto; border-radius: 0; background: none; color: inherit; font-size: inherit; }
+.cs .item > .no { padding-top: 0; }
+.cs .ans { margin: 2px 0 8px; }
+.cs table.grid th { color: inherit; }
+.cs table.kana th { font-family: var(--ko); background: none; padding: 0; border-radius: 0; }
+.cs table.kana td { width: auto; height: auto; font-family: var(--ko); font-size: inherit; }
+.cs table.kana td small { font-family: var(--ko); margin-left: 0; }
+.cs .box { border: 0; }
+.cs .box.line { border: 1.5px solid var(--slate-soft); }
+.cs ul.ex li { flex-wrap: nowrap; }
+.cs ol.choices { flex-wrap: nowrap; }
+
+/* ---------- 쪽 ---------- */
+.cs .page { position: relative; padding: 30px 34px 32px; font-size: 15px; line-height: 1.8; }
+.cs .page + .page { border-top: 1px solid var(--line); }
+.cs .page img.fig { display: block; max-width: 100%; height: auto; }
+.cs .page img.fig.c { margin: 0 auto; }
+.cs .cols { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 12px 22px; align-items: start; }
+.cs .row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; }
+.cs small, .cs .muted { color: var(--muted); }
+.cs em { font-style: normal; color: var(--red); }
+.cs b.blue, .cs .blue { color: #2a62a8; }
+.cs .ul { text-decoration: underline; text-underline-offset: 4px; }
+.cs .wavy { text-decoration: underline wavy var(--red); text-underline-offset: 6px; text-decoration-thickness: 1.2px; }
+
+/* ---------- 일본어·루비 ---------- */
+.cs .ja { font-family: var(--ja); }
+.cs ruby { ruby-position: over; ruby-align: center; }
+.cs rt { font-family: var(--ko); font-size: .5em; color: var(--rt); font-weight: 400; letter-spacing: 0; line-height: 1.1; }
+.cs rt.kana { font-family: var(--ja); color: #6d7d93; }
+.cs rt:not(.kana) { color: #9a7b55; }                 /* 한글 발음은 후리가나와 구별되는 색 */
+.cs .ja, .cs .jl { line-height: 2.3; }
+body.no-rt .cs rt { visibility: visible; }   /* 입뽀입뽀의 발음 숨기기는 이 교재에 적용하지 않음 */
+body.cs-rt-all .cs rt, body.cs-rt-ko .cs rt:not(.kana) { visibility: hidden; }   /* 웹: 발음 숨기기 (cs.js) */
+
+/* ---------- 과 표제지 ---------- */
+.cs .opener {
+  position: relative; overflow: hidden; color: var(--ink); padding: 46px 40px 40px; min-height: 420px;
+  background: radial-gradient(120% 90% at 100% 0%, #dfe6ef 0%, rgba(223,230,239,0) 60%), linear-gradient(160deg, #f6f8fb 0%, #e9eef4 100%);
+}
+.cs .opener::before {   /* 원본의 깃털 무늬 대신: 표지의 큰 JIP 글자를 흐리게 */
+  content: "JIP"; position: absolute; right: -18px; top: -40px; font: 900 220px/1 var(--latin); letter-spacing: -.04em;
+  color: rgba(86, 112, 143, .08); pointer-events: none;
+}
+.cs .opener .ch { font: 800 15px var(--latin); letter-spacing: .32em; color: var(--slate); text-transform: uppercase; }
+.cs .opener .ch b { display: block; font-size: 92px; letter-spacing: -.03em; line-height: .95; color: var(--charcoal); margin-top: 6px; }
+.cs .opener h1.title { position: relative; margin: 16px 0 26px; font-size: 30px; font-weight: 900; line-height: 1.3; letter-spacing: -.01em; }
+.cs .opener h1.title::after { content: ""; display: block; width: 56px; height: 5px; border-radius: 3px; background: var(--mist); margin-top: 16px; }
+.cs .opener .pts { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px 22px 16px; box-shadow: 0 8px 24px rgba(31, 42, 58, .06); max-width: 620px; }
+.cs .opener .pts h4 { margin: 0 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .5em; color: var(--slate); }
+.cs .opener .pts ul { list-style: none; margin: 0; padding: 0; }
+.cs .opener .pts li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 7px 0 7px 22px; border-top: 1px dashed var(--line); position: relative; }
+.cs .opener .pts li:first-child { border-top: 0; }
+.cs .opener .pts li::before { content: ""; position: absolute; left: 2px; top: 1.05em; width: 8px; height: 8px; transform: rotate(45deg); background: var(--slate); }
+.cs .opener .pts li .ja { font-size: 18px; font-weight: 700; line-height: 1.9; }
+.cs .opener .pts li > b { font-size: 16px; font-weight: 800; }
+.cs .opener .pts li small { font-size: 13.5px; }
+.cs .opener .pts li.sub { padding-left: 40px; border-top: 0; padding-top: 0; }
+.cs .opener .pts li.sub::before { left: 22px; width: 6px; height: 6px; background: var(--mist); }
+
+/* ---------- 문형 제목 (원본의 회색 화살표 띠) ---------- */
+.cs h2.pt {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin: 6px 0 14px; padding: 9px 46px 9px 16px;
+  background: var(--band); clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 50%, calc(100% - 26px) 100%, 0 100%);
+  font-size: 20px; font-weight: 800; line-height: 1.6; border-left: 5px solid var(--slate);
+}
+.cs h2.pt .n { font: 800 19px var(--ko); color: var(--slate-dk); }
+.cs h2.pt .ja { font-weight: 700; line-height: 1.9; }
+.cs h2.pt small { font-size: 14px; font-weight: 500; color: #4d5665; }
+.cs h2.pt .sub { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding-left: 28px; font-size: 18px; }
+.cs * + h2.pt { margin-top: 30px; }
+.cs h3.sub { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin: 22px 0 10px; font-size: 17px; font-weight: 800; }
+.cs h3.sub::before { content: "※"; color: var(--slate); }
+.cs h3.sub.star::before { content: "★"; }
+.cs h3.sub.dot::before { content: "●"; font-size: 11px; color: var(--slate); align-self: center; }
+.cs h3.sub.none::before { content: none; }
+
+/* ---------- 꼭지 제목: 文法 / 聴解 / 復習 チェック, 외우기·연습 ---------- */
+.cs h2.sec {
+  position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 4px 0 18px; padding: 10px 46px 10px 18px;
+  font-size: 21px; font-weight: 800; color: #fff; background: var(--drill);
+  clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 50%, calc(100% - 26px) 100%, 0 100%);
+}
+.cs h2.sec .t { font-family: var(--ja); line-height: 1.9; }
+.cs h2.sec .t rt { color: rgba(255,255,255,.8); }
+.cs h2.sec::after { content: attr(data-en); margin-left: auto; font: 700 11px var(--latin); letter-spacing: .25em; text-transform: uppercase; opacity: .75; }
+.cs h2.sec.k-gram { background: var(--gram); }
+.cs h2.sec.k-listen { background: var(--listen); }
+.cs h2.sec.k-review { background: var(--review); }
+.cs h2.sec.k-drill .t { font-family: var(--ko); }
+.cs * + h2.sec { margin-top: 30px; }
+
+/* ---------- 설명·TIP ---------- */
+.cs p.note { position: relative; margin: 0 0 12px; padding-left: 26px; }
+.cs p.note::before { content: "☞"; position: absolute; left: 0; top: 0; color: var(--slate); }
+.cs p.note b { font-weight: 800; }
+.cs .tip { margin: 10px 0 14px; padding: 10px 16px; border-radius: 12px; background: #fbf7ec; border: 1px solid #ecdfbf; font-size: 14.5px; }
+.cs .tip > b:first-child { display: inline-block; margin-right: 8px; padding: 0 9px; border-radius: 6px; background: #e3b84f; color: #fff; font: 800 12px/22px var(--latin); letter-spacing: .05em; }
+.cs .tip.r { margin-left: auto; width: fit-content; max-width: 100%; }
+.cs .box { margin: 10px 0 16px; padding: 14px 18px; border-radius: 14px; background: var(--slate-tint); }
+.cs .box.line { background: #fff; border: 1.5px solid var(--slate-soft); }
+
+/* ---------- 예문 ---------- */
+.cs ul.ex { list-style: none; margin: 4px 0 16px; padding: 0; }
+.cs ul.ex > li { position: relative; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 0 18px; align-items: baseline; padding: 3px 0 3px 22px; }
+.cs ul.ex > li::before { content: ""; position: absolute; left: 4px; top: 1.35em; width: 6px; height: 6px; border-radius: 50%; background: var(--slate); }
+.cs ul.ex > li > .ja { font-size: 17.5px; }
+.cs ul.ex > li > .ko { font-size: 14px; color: #4d5665; }
+.cs ul.ex > li.ab { display: block; padding-bottom: 8px; }
+.cs ul.ex .l { display: grid; grid-template-columns: 30px minmax(0, 1.45fr) minmax(0, 1fr); gap: 0 12px; align-items: baseline; }
+.cs ul.ex .l.full { grid-template-columns: 30px minmax(0, 1fr); }
+.cs ul.ex .l > .ko.under { grid-column: 2 / -1; margin-top: -6px; }
+.cs ul.ex .l:has(> .ko.under) > .ja { grid-column: 2 / -1; }
+.cs .spk { font: 800 15px var(--latin); color: var(--slate-dk); }
+.cs .spk.b { color: var(--review); }
+.cs ul.ex.plain > li::before { content: none; }
+.cs ul.ex.plain > li { padding-left: 0; }
+
+/* ---------- 표 ---------- */
+.cs table.grid { width: 100%; border-collapse: collapse; margin: 8px 0 18px; font-size: 15px; border-top: 3px solid #8b94a3; border-bottom: 3px solid #8b94a3; }
+.cs table.grid th { background: var(--band); font-weight: 800; padding: 7px 8px; border: 1px solid #d3d8df; border-top: 0; }
+.cs table.grid td { padding: 6px 10px; border: 1px dashed #c7cdd6; text-align: center; vertical-align: middle; }
+.cs table.grid td.l, .cs table.grid th.l { text-align: left; }
+.cs table.grid th.side { background: var(--band); width: 1%; white-space: nowrap; }
+.cs table.grid .ja { font-size: 17px; line-height: 2.1; }
+.cs table.grid tr > :first-child { border-left: 0; } .cs table.grid tr > :last-child { border-right: 0; }
+.cs table.grid.tight td { padding: 3px 8px; }
+.cs .tbl { overflow-x: auto; }
+
+/* 가나 오십음도 */
+.cs table.kana { width: 100%; border-collapse: separate; border-spacing: 4px; margin: 6px 0 16px; table-layout: fixed; }
+.cs table.kana th { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.cs table.kana td { background: #fff; border: 1px solid var(--line); border-radius: 10px; text-align: center; padding: 4px 0 3px; line-height: 1.25; }
+.cs table.kana td .ja { display: block; font-size: 24px; line-height: 1.3; }
+.cs table.kana td small { display: block; font-size: 12px; color: var(--muted); }
+.cs table.kana td:empty { background: transparent; border-color: transparent; }
+
+/* ---------- 단어 상자 ---------- */
+.cs .words { margin: 22px 0 4px; border-radius: 14px; background: #f3f5f8; padding: 0 18px 12px; }
+.cs .words h4 { display: inline-block; margin: 0 0 8px -18px; padding: 4px 18px 4px 16px; border-radius: 14px 0 14px 0; background: var(--band-dk);
+  font-size: 15px; font-weight: 800; font-family: var(--ja); line-height: 1.9; }
+.cs .words ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 20px; }
+.cs .words li { display: inline-flex; align-items: baseline; gap: 6px; }
+.cs .words li .ja { font-size: 16.5px; }
+.cs .words li .ko { font-size: 13px; color: #4d5665; }
+
+/* ---------- 그림 낱말 쪽 (N課 いろいろな…) ---------- */
+.cs .vtitle { display: flex; align-items: center; justify-content: center; gap: 4px 14px; flex-wrap: wrap; margin: 0 auto 22px; padding: 10px 26px; width: fit-content;
+  border: 3px solid #4f7a55; border-radius: 6px 6px 18px 18px; background: #fff; box-shadow: 6px 6px 0 #dfe8df; }
+.cs .vtitle .n { font: 900 22px var(--ja); }
+.cs .vtitle .ja { font-size: 24px; font-weight: 800; }
+.cs .vtitle small { font-size: 14px; color: #4d5665; }
+.cs .vgrid { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 22px 16px; }
+.cs .vgrid figure { margin: 0; text-align: center; }
+.cs .vgrid img.fig { height: 112px; width: auto; max-width: 100%; object-fit: contain; margin: 0 auto 6px; }
+.cs .vgrid figcaption .ja { display: block; font-size: 18px; font-weight: 700; line-height: 2.1; }
+.cs .vgrid figcaption .ko { display: block; font-size: 13.5px; color: #4d5665; }
+
+/* ---------- 외우기 목록 ---------- */
+.cs .memo { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 0 26px; margin: 0 0 12px; }
+.cs .memo > div { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 10px; align-items: baseline; padding: 5px 4px; border-bottom: 1px dashed var(--line); }
+.cs .memo .ja { font-size: 18px; }
+.cs .memo .ko { font-size: 14px; color: #4d5665; }
+
+/* ---------- 문제 ---------- */
+.cs p.q { position: relative; margin: 18px 0 12px; padding-left: 26px; font-weight: 700; }
+.cs p.q::before { content: "☞"; position: absolute; left: 0; color: var(--slate); font-weight: 400; }
+.cs p.q .qn { font-family: var(--ja); font-weight: 800; margin-right: 6px; }
+.cs p.q .track, .cs p.q button.pa { margin-left: 8px; }
+.cs .item { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 6px; align-items: baseline; margin: 0 0 12px; }
+.cs .item > .no { font: 700 15px var(--latin); color: var(--slate-dk); }
+.cs .item > .body > .ko { display: block; }
+.cs .item .ans { margin-top: 4px; }
+.cs .ans { display: flex; align-items: baseline; gap: 8px; min-height: 34px; padding: 2px 6px; border-bottom: 1.5px solid #b9c1cc; font-family: var(--ja); font-size: 16px; }
+.cs .ans::before { content: "→"; color: var(--muted); font-family: var(--ko); }
+.cs .ans.ab::before { content: none; }
+.cs .ans .lb { font: 800 14px var(--latin); color: var(--slate-dk); }
+.cs .ans .pre { flex: none; }
+.cs .ans .fill { flex: 1; }
+.cs .blank { display: inline-block; min-width: 4.5em; border-bottom: 1.5px solid #8b94a3; text-align: center; margin: 0 4px; }
+.cs .blank.s { min-width: 2.2em; }
+.cs .paren { display: inline-block; min-width: 3.2em; text-align: center; }
+.cs .paren::before { content: "（"; } .cs .paren::after { content: "）"; }
+.cs .paren .blank, .cs .paren .ox { border: 0; margin: 0; }
+.cs ol.choices { list-style: none; margin: 4px 0 10px; padding: 0 0 0 4px; counter-reset: c; display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 2px 12px; }
+.cs ol.choices > li { counter-increment: c; font-family: var(--ja); font-size: 16px; }
+.cs ol.choices > li::before { content: counter(c, decimal) ""; display: inline-block; width: 1.5em; height: 1.5em; margin-right: 6px; border: 1.3px solid currentColor; border-radius: 50%;
+  font: 700 11.5px/1.4em var(--latin); text-align: center; vertical-align: .12em; }
+.cs ol.choices.v { grid-template-columns: 1fr; }
+.cs .figq { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 14px 16px; align-items: end; margin: 6px 0 14px; }
+.cs .figq figure { margin: 0; text-align: center; }
+.cs .figq figure > .no { display: block; font: 700 15px var(--latin); color: var(--slate-dk); margin-bottom: 4px; text-align: left; }
+.cs .figq img.fig { margin: 0 auto 6px; max-height: 150px; width: auto; }
+.cs .figq figcaption { font-family: var(--ja); }
+.cs .oxl { list-style: none; margin: 0 0 12px; padding: 0 0 0 20px; }
+.cs .oxl > li { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 4px 0; max-width: 560px; }
+.cs .compose { margin: 8px 0 16px; padding: 18px 22px; border-radius: 14px; background: #f3f5f8; border: 1px solid var(--line); }
+.cs .compose .ja { font-size: 17px; }
+.cs .line { display: inline-block; min-width: 9em; border-bottom: 1.5px solid #8b94a3; }
+
+/* 청해 스크립트 (원본 권말 ‘스크립트 및 해답’) */
+.cs details.script { margin: 4px 0 18px; border: 1.5px solid var(--slate-soft); border-radius: 12px; background: #fff; }
+.cs details.script > summary { cursor: pointer; list-style: none; padding: 8px 14px; font-size: 13.5px; font-weight: 800; color: var(--slate-dk); display: flex; align-items: center; gap: 8px; }
+.cs details.script > summary::-webkit-details-marker { display: none; }
+.cs details.script > summary::before { content: "▶"; font-size: 10px; transition: transform .15s; }
+.cs details.script[open] > summary::before { transform: rotate(90deg); }
+.cs details.script > .in { padding: 4px 18px 14px; border-top: 1px dashed var(--line); font-family: var(--ja); font-size: 16px; }
+.cs details.script .in p { margin: 4px 0; }
+.cs details.script .who { font-family: var(--ja); font-weight: 700; color: var(--slate-dk); margin-right: 6px; }
+
+/* 쓰기 연습 표 (활용 연습) */
+.cs table.drill td { height: 40px; }
+.cs table.drill td.ja, .cs table.drill td .ja { font-size: 16px; }
+
+/* ---------- 휴대폰 ---------- */
+@media (max-width: 640px) {
+  .cs .page { padding: 22px 16px 24px; }
+  .cs .opener { padding: 34px 20px 26px; min-height: 0; }
+  .cs .opener .ch b { font-size: 70px; }
+  .cs .opener h1.title { font-size: 24px; }
+  .cs h2.pt { font-size: 18px; padding-right: 36px; }
+  .cs h2.sec { font-size: 18px; }
+  .cs h2.sec::after { display: none; }
+  .cs ul.ex > li { grid-template-columns: 1fr; }
+  .cs ul.ex .l { grid-template-columns: 26px minmax(0, 1fr); }
+  .cs ul.ex .l > .ko { grid-column: 2; }
+  .cs .vgrid { --n: 2 !important; }
+  .cs .figq { --n: 2 !important; }
+  .cs ol.choices { grid-template-columns: 1fr 1fr; }
+  .cs .memo { grid-template-columns: 1fr; }
+  .cs table.kana td .ja { font-size: 19px; }
+}

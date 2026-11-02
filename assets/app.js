@@ -16,6 +16,15 @@
   });
   function campusTxt(cs) { return cs && cs.length ? cs.join(' · ') : '캠퍼스 미지정'; }
 
+  // 신촌 캠퍼스는 Speedy 입뽀입뽀(입문·초급 × 평일반·주말반) 교재를 쓴다 — 단계 5~8, 쪽 경로 cs/…, sN/… (빌드: japanese_jip_cs/web).
+  var CS_CAMPUS = '신촌';
+  var STAGE_NAME = { 1: '1권', 2: '2권', 3: '3권', 4: '4권', 5: '평일반 입문', 6: '평일반 초급', 7: '주말반 입문', 8: '주말반 초급' };
+  function stageTxt(ns) { return ns.map(function (n) { return STAGE_NAME[n] || n + '권'; }).join(', '); }
+  function stagesFor(cs) { return cs && cs.indexOf(CS_CAMPUS) >= 0 ? [5, 6, 7, 8] : [1, 2, 3, 4]; }
+  function hasCS() { return me.admin || me.campuses.indexOf(CS_CAMPUS) >= 0 || me.stages.some(function (n) { return n >= 5; }); }
+  function hasJIP() { return me.admin || me.campuses.some(function (c) { return c !== CS_CAMPUS; }) || me.stages.some(function (n) { return n <= 4; }); }
+  function csHome() { return !me.admin && hasCS() && !hasJIP(); }   // 첫 화면을 신촌 교재로
+
   // ---------------------------------------------------------------- 약관·개인정보 (가입 화면 동의 + #/terms, #/privacy 공개 쪽)
   // 문구를 바꾸면 VER을 올린다. 가입할 때 동의한 판(VER)과 시각이 회원 정보(user metadata)에 남는다.
   var DOC_VER = '2026-10-30';
@@ -123,15 +132,25 @@
       view.querySelectorAll('[data-a]').forEach(function (el) { auds['audio/' + el.dataset.a + '.mp3'] = 1; });
       var crumbs = view.querySelector('.crumbs');
       var parts = crumbs ? crumbs.textContent.split('/').map(function (x) { return x.trim(); }).filter(Boolean) : [];
-      document.title = parts.concat('입뽀입뽀 JIP').join(' · ');
+      var cs = !!view.querySelector('.cs');
+      document.body.classList.toggle('cs-on', cs);
+      document.body.classList.toggle('cs-teacher', cs && me.teacher);
+      document.title = parts.concat(cs ? 'Speedy 입뽀입뽀' : '입뽀입뽀 JIP').join(' · ');
       window.scrollTo(0, 0);
       if (!me.teacher) view.querySelectorAll('.stages a.stage').forEach(function (a) {
         var st = +(a.className.match(/\bs(\d)\b/) || [])[1];
         if (me.stages.indexOf(st) < 0) { a.classList.add('locked'); a.insertAdjacentHTML('beforeend', '<span class="lock">권한 없음</span>'); }
       });
+      if (!me.teacher) view.querySelectorAll('.cgroup[data-st]').forEach(function (g) {   // 신촌: 학생에게는 자기 반(평일/주말)만
+        g.hidden = !g.dataset.st.split(',').some(function (n) { return me.stages.indexOf(+n) >= 0; });
+      });
+      var home = view.querySelector('main.index');                                       // 두 교재를 다 보는 회원: 서로 오가는 길
+      if (home && path === 'index.html' && hasCS()) home.insertAdjacentHTML('beforeend', '<a class="xbook cs" href="cs/index.html"><small>신촌캠퍼스</small><b>Speedy 입뽀입뽀</b> 입문·초급 교재 ›</a>');
+      if (home && path === 'cs/index.html' && hasJIP()) home.insertAdjacentHTML('beforeend', '<a class="xbook" href="../index.html"><small>종로·강남</small><b>입뽀입뽀</b> 1~4권 교재 ›</a>');
       window.cipPlayer.scan();
       if (window.jipApply) window.jipApply();
       if (window.jipQuiz) window.jipQuiz(view);
+      if (window.csApply) window.csApply(view);
       if (window.jipWrite) setTimeout(function () { window.jipWrite(view); }, 50);   // 글꼴·그림 배치 뒤 칸 크기를 잰다
       return signed(imgs.concat(Object.keys(auds))).then(function () {
         view.querySelectorAll('img[data-img]').forEach(function (i) {
@@ -178,6 +197,11 @@
         + '<fieldset class="pick"><legend>캠퍼스</legend>' + CAMPUSES.map(function (c, i) {
           return '<label><input type="radio" name="campus" value="' + esc(c) + '" required' + (i ? '' : '') + '><span>' + esc(c) + '</span></label>';
         }).join('') + '</fieldset>'
+        + '<fieldset class="pick cs-only" hidden><legend>수강 반 <small>신촌</small></legend>'
+        + ['평일반', '주말반'].map(function (c) { return '<label><input type="radio" name="cs_class" value="' + c + '"><span>' + c + '</span></label>'; }).join('')
+        + '</fieldset><fieldset class="pick cs-only" hidden><legend>과정</legend>'
+        + ['입문', '초급'].map(function (c) { return '<label><input type="radio" name="cs_level" value="' + c + '"><span>' + c + '</span></label>'; }).join('')
+        + '</fieldset>'
         + '<label>소속·메모 <small>선택 · 승인에 참고합니다</small><input name="note" maxlength="100" placeholder="예: 화목 저녁반"></label>'
         + agreeBlock()
         + '<button class="btn" type="submit">가입 신청</button>',
@@ -193,9 +217,15 @@
         + '<button type="button" data-mode="signup"' + (mode === 'signup' ? ' class="on"' : '') + '>회원가입</button></div>'
       : '<div class="tabs"><button type="button" data-mode="login">← 로그인으로</button></div>';
     view.innerHTML = bar() + '<div class="gate"><div class="hero home"><div class="k">JAPANESE · 일본어</div><h1>입뽀입뽀</h1>'
-      + '<p>교재를 보면서 원어민 음성을 듣는 회원 전용 웹 교재입니다.<br>가입 후 관리자 승인을 받으면 열람할 수 있습니다.</p></div>'
+      + '<p>교재를 보면서 원어민 음성을 듣는 회원 전용 웹 교재입니다.<br>가입 후 관리자 승인을 받으면 열람할 수 있습니다.</p>'
+      + '<p class="sm">종로·강남: 입뽀입뽀 1~4권 · 신촌: Speedy 입뽀입뽀 입문·초급</p></div>'
       + '<div class="card">' + tabs + '<form data-form="' + mode + '">' + f + '<p class="note' + (ok ? ' ok' : '') + '" role="status">' + (note || '') + '</p></form></div>'
       + '<p class="legal"><a href="#/terms">이용약관</a> · <a href="#/privacy">개인정보 수집·이용 안내</a></p></div>';
+  }
+
+  function csNote(form) {   // 신촌 가입자는 고른 반·과정을 메모 앞에 붙여 승인에 참고하게 한다
+    var c = form.querySelector('input[name=campus]:checked'), k = form.querySelector('input[name=cs_class]:checked'), l = form.querySelector('input[name=cs_level]:checked');
+    return c && c.value === CS_CAMPUS && k && l ? '[' + k.value + ' ' + l.value + '] ' : '';
   }
 
   function submit(form) {
@@ -213,7 +243,7 @@
     } else if (mode === 'signup') {
       p = sb.auth.signUp({
         email: v('email'), password: form.elements.pw.value,
-        options: { emailRedirectTo: here, data: { name: v('name'), note: v('note'), campus: (form.querySelector('input[name=campus]:checked') || {}).value,
+        options: { emailRedirectTo: here, data: { name: v('name'), note: csNote(form) + v('note'), campus: (form.querySelector('input[name=campus]:checked') || {}).value,
           agreed: { terms: DOC_VER, privacy: DOC_VER, at: new Date().toISOString() } } }
       }).then(function (r) {
         if (r.error) return say(/registered|exists/i.test(r.error.message) ? '이미 가입된 이메일입니다. 로그인해 주세요.'
@@ -237,9 +267,10 @@
   function lockedView(st) {
     window.cipPlayer.reset();
     view.dataset.path = '';
-    view.innerHTML = bar(st + '권') + '<div class="gate"><div class="card"><h2>' + st + '권 열람 권한이 없습니다</h2>'
-      + '<p class="msg">지금 열람할 수 있는 과정: <b>' + me.stages.map(function (n) { return n + '권'; }).join(', ') + '</b><br>'
-      + st + '권이 필요하면 담당 선생님께 요청해 주세요.</p>'
+    var nm = STAGE_NAME[st] || st + '권';
+    view.innerHTML = bar(nm) + '<div class="gate"><div class="card"><h2>' + nm + ' 열람 권한이 없습니다</h2>'
+      + '<p class="msg">지금 열람할 수 있는 과정: <b>' + stageTxt(me.stages) + '</b><br>'
+      + nm + ' 교재가 필요하면 담당 선생님께 요청해 주세요.</p>'
       + '<p class="row"><a class="btn" href="#/">처음으로</a><button class="btn ghost" type="button" data-act="recheck">권한 다시 확인</button></p></div></div>';
     addUserMenu();
   }
@@ -248,7 +279,7 @@
     view.dataset.path = '';
     view.innerHTML = bar() + '<div class="gate"><div class="card"><h2>승인 대기 중입니다</h2>'
       + '<p class="msg"><b>' + esc(me.user.email) + '</b> 계정으로 <b>' + esc(campusTxt(me.campuses)) + '</b> 캠퍼스에 가입 신청이 접수되었습니다.<br>'
-      + '담당 선생님이 볼 수 있는 권을 열어 주면 교재가 열립니다. 연락을 받으면 ‘승인 확인’을 눌러 주세요.</p>'
+      + '담당 선생님이 볼 수 있는 권(과정)을 열어 주면 교재가 열립니다. 연락을 받으면 ‘승인 확인’을 눌러 주세요.</p>'
       + '<p class="row"><button class="btn" type="button" data-act="recheck">승인 확인</button>'
       + '<a class="btn ghost" href="#/me">캠퍼스 변경</a>'
       + '<button class="btn ghost" type="button" data-act="logout">로그아웃</button></p></div></div>';
@@ -272,7 +303,7 @@
     view.innerHTML = bar('내 정보') + '<div class="gate"><div class="card"><h2>내 정보</h2>'
       + '<dl class="kv"><dt>이름</dt><dd>' + esc(me.profile.name || '-') + '</dd><dt>이메일</dt><dd>' + esc(me.user.email) + '</dd>'
       + '<dt>등급</dt><dd>' + role + '</dd>'
-      + (me.teacher ? '' : '<dt>열람 교재</dt><dd>' + (me.stages.length ? me.stages.map(function (n) { return n + '권'; }).join(', ') : '승인 대기') + '</dd>')
+      + (me.teacher ? '' : '<dt>열람 교재</dt><dd>' + (me.stages.length ? stageTxt(me.stages) : '승인 대기') + '</dd>')
       + '<dt>캠퍼스</dt><dd class="cur">' + esc(me.admin ? '전체' : campusTxt(me.campuses)) + '</dd></dl>'
       + pick + '<p class="row back"><a class="lnk" href="#/">← 처음으로</a></p></div>'
       + (me.admin ? '' : '<details class="card leave"><summary>회원 탈퇴</summary>'
@@ -318,7 +349,7 @@
 
   // ---------------------------------------------------------------- 회원 관리 (선생님·전체 관리자)
   // 선생님: 학생마다 1~4권 열람 권한을 켜고 끈다. 전체 관리자: 여기에 더해 선생님 지정·해제.
-  var adminFilter = 'wait', campusFilter = '', STAGES = [1, 2, 3, 4];
+  var adminFilter = 'wait', campusFilter = '';
   function adminView() {
     window.cipPlayer.reset();
     var tabs = [['wait', '승인 대기'], ['ok', '수강생'], ['teacher', '선생님'], ['all', '전체']];
@@ -328,7 +359,7 @@
       + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 선생님은 먼저 회원가입을 한 뒤, 여기서 ‘선생님 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
         : mine.length ? '<b>' + esc(mine.join(' · ')) + '</b> 캠퍼스 담당 선생님입니다. 담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
         : '<b>담당 캠퍼스가 아직 지정되지 않았습니다.</b> 전체 관리자에게 캠퍼스 지정을 요청해 주세요.')
-      + ' 학생 줄의 권 단추를 누르면 그 권이 열리거나 닫힙니다.</p>'
+      + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. (신촌 캠퍼스 학생: 평일반·주말반 입문·초급)</p>'
       + (mine.length > 1 ? '<div class="cfilter"><span>캠퍼스</span>' + [''].concat(mine).map(function (c) {
           return '<button type="button" data-cfilter="' + esc(c) + '"' + (c === campusFilter ? ' class="on"' : '') + '>' + (c ? esc(c) : '전체') + '</button>';
         }).join('') + '</div>' : '')
@@ -367,10 +398,10 @@
           + '<button class="lnk" type="button" data-role="student" data-id="' + p.id + '" data-cur="' + esc(p.campuses.join(',')) + '">선생님 해제</button>'
           : '');
     } else {
-      ctl = '<div class="stg">' + STAGES.map(function (n) {
+      ctl = '<div class="stg' + (stagesFor(p.campuses)[0] > 4 ? ' cs' : '') + '">' + stagesFor(p.campuses).map(function (n) {
         var on = p.stages.indexOf(n) >= 0;
         return '<button type="button" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '" data-stage="' + n + '" data-id="' + p.id
-          + '" data-cur="' + p.stages.join(',') + '">' + n + '권</button>';
+          + '" data-cur="' + p.stages.join(',') + '">' + STAGE_NAME[n] + '</button>';
       }).join('') + '</div>'
         + '<div class="mrow"><label class="cmp">캠퍼스 <select data-scampus data-id="' + p.id + '" data-cur="' + esc(p.campuses[0] || '') + '">'
         + (p.campuses.length ? '' : '<option value="" selected>미지정</option>')
@@ -447,11 +478,13 @@
 
   function route() {
     var path = routePath();
+    if (!/^(cs|s[5-8])\//.test(path)) document.body.classList.remove('cs-on', 'cs-teacher');   // 신촌 교재 화면 밖
     if (DOCS[path]) return docView(path);           // 약관은 로그인 없이도 볼 수 있다
     if (!me) return authView();
     if (path === 'me') return meView();
     if (!me.teacher && !me.stages.length) return pendingView();
     if (path === 'admin') return me.teacher ? adminView() : (location.hash = '#/');
+    if (path === 'index.html' && csHome()) path = 'cs/index.html';
     var st = +(path.match(/^s(\d)\//) || [])[1];
     if (st && !me.teacher && me.stages.indexOf(st) < 0) return lockedView(st);
     if (view.dataset.path === path && view.querySelector('main')) return;
@@ -485,6 +518,13 @@
   });
   view.addEventListener('change', function (ev) {
     if (ev.target.matches('[data-scampus]')) return changeCampus(ev.target);
+    if (ev.target.name === 'campus' && ev.target.type === 'radio' && ev.target.form && ev.target.form.dataset.form === 'signup') {
+      var on = ev.target.value === CS_CAMPUS;               // 신촌을 고르면 수강 반·과정 칸
+      ev.target.form.querySelectorAll('.cs-only').forEach(function (f) {
+        f.hidden = !on; f.querySelectorAll('input').forEach(function (i) { i.required = on; });
+      });
+      return;
+    }
     var box = ev.target.closest('.agree');                 // 전체 동의 ↔ 항목 동의 맞추기
     if (!box) return;
     var items = box.querySelectorAll('.agree-item input'), all = box.querySelector('[data-agree-all]');
