@@ -68,6 +68,18 @@
 .cfilter button { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px;
   background: #fff; color: #6b6360; border: 1px solid var(--line); }
 .cfilter button.on { background: var(--charcoal); color: #fff; border-color: var(--charcoal); }
+/* 승인 대기 단계 칩 · 이름 검색 · 휴강/강사 신청 표시 */
+.cfilter { flex-wrap: wrap; }
+.sfilter { margin: -6px 0 12px; }
+.sfilter button.on { background: var(--accent); border-color: var(--accent); }
+.admin .search { margin: 0 0 6px; }
+.admin .search input { width: 100%; box-sizing: border-box; font-size: 15px; padding: 9px 12px; }
+.mem .info .tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tbadge { font-size: 12px; font-weight: 800; color: #fff; background: var(--charcoal); border-radius: 999px; padding: 2px 9px; }
+.mem .info .want { font-size: 12px; font-weight: 700; color: #6b6360; }
+.badge.leave { background: #b9770e; }
+.stg button.next:not(.on) { border-color: var(--accent); color: var(--accent-dk); border-style: dashed; }
+.leave-t { color: #b9770e; }
 
 /* 내 정보 */
 .kv { display: grid; grid-template-columns: 5.5em 1fr; gap: 8px 12px; margin: 4px 0 18px; font-size: 14px; }
