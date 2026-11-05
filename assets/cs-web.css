@@ -57,7 +57,7 @@ body.cs-on .pl-bar i { background: #94a9c4; }
 .cs .lesson .prog.seen { background: #eef2f7; color: var(--slate); }
 .cs .lesson .prog.done { background: #e6f6ea; color: #2e7d4f; }
 
-/* 선생님 도구 */
+/* 강사 도구 */
 .cs .cs-tbar { position: sticky; top: 100px; z-index: 18; max-width: 860px; margin: 12px auto 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
   padding: 8px 12px; border-radius: 14px; background: #1f2a3a; color: #fff; box-shadow: 0 6px 18px rgba(31, 42, 58, .2); }
 .cs .cs-tbar .lb { font-size: 12px; font-weight: 800; letter-spacing: .2em; color: #94a9c4; margin-right: 4px; }

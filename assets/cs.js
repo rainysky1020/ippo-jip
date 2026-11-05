@@ -1,6 +1,6 @@
 // Speedy 입뽀입뽀 (신촌) 웹판 보조 기능. 교재 내용은 없다. quiz.js 뒤에 읽는다.
 //   1) 발음 3단계: 모두 보기 → 한글 발음 숨기기(후리가나만) → 모두 숨기기   [data-act=rt3]
-//   2) 선생님 도구(body.cs-teacher): 정답 모두 보기 · 스크립트 모두 펼치기 · 전체 다시 풀기
+//   2) 강사 도구(body.cs-teacher): 정답 모두 보기 · 스크립트 모두 펼치기 · 전체 다시 풀기
 //   3) 학습 기록(이 브라우저): 써 넣은 답·고른 보기를 쪽마다 저장해 다시 열면 되살리고, ‘정답 확인’ 점수를 과 목록에 보여 준다.
 // 회원판(app.js)은 쪽을 넣을 때마다 window.csApply(view)를 부른다. 정적판은 읽을 때 한 번.
 (function () {
@@ -67,7 +67,7 @@
     });
   }
 
-  // ---------------------------------------------------------------- 2) 선생님 도구
+  // ---------------------------------------------------------------- 2) 강사 도구
   function revealAll(root) {
     root.querySelectorAll('section.page').forEach(function (sec) {
       if (!sec.querySelector('[data-ans]')) return;
@@ -90,7 +90,7 @@
     if (!main || !document.body.classList.contains('cs-teacher') || root.querySelector('.cs-tbar')) return;
     var bar = document.createElement('div');
     bar.className = 'cs-tbar';
-    bar.innerHTML = '<span class="lb">선생님</span>'
+    bar.innerHTML = '<span class="lb">강사</span>'
       + '<button type="button" data-tact="reveal">정답 모두 보기</button>'
       + '<button type="button" data-tact="scripts">스크립트 모두 펼치기</button>'
       + '<button type="button" data-tact="reset">전체 다시 풀기</button>';
@@ -139,7 +139,7 @@
     timer = setTimeout(function () { save(root); }, 400);
   });
 
-  if (!document.getElementById('view')) {          // 정적판: ?teacher 로 선생님 도구 확인
+  if (!document.getElementById('view')) {          // 정적판: ?teacher 로 강사 도구 확인
     if (/[?&]teacher\b/.test(location.search)) document.body.classList.add('cs-teacher');
     window.csApply(document);
   } else rtApply();

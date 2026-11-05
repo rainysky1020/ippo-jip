@@ -31,7 +31,7 @@
   var DOCS = {
     terms: ['이용약관', [
       ['제1조 (목적)', '이 약관은 입뽀입뽀 JIP 웹 교재(이하 ‘서비스’)의 이용 조건과 절차를 정합니다.'],
-      ['제2조 (회원가입)', '가입을 신청한 뒤 담당 선생님의 승인을 받아야 교재를 볼 수 있습니다. 수강생이 아니거나 신청 내용이 사실과 다르면 승인하지 않을 수 있습니다.'],
+      ['제2조 (회원가입)', '가입을 신청한 뒤 담당 강사의 승인을 받아야 교재를 볼 수 있습니다. 수강생이 아니거나 신청 내용이 사실과 다르면 승인하지 않을 수 있습니다.'],
       ['제3조 (이용 범위)', '회원은 승인된 권의 교재를 본인의 학습 목적으로만 이용할 수 있습니다.'],
       ['제4조 (금지 행위)', '교재의 글·그림·음원을 복제, 녹음, 캡처하여 다른 사람에게 배포하거나, 계정을 다른 사람과 함께 쓰는 행위를 금지합니다. 위반하면 열람 권한이 제한될 수 있습니다.'],
       ['제5조 (저작권)', '교재와 음원의 저작권은 저작권자에게 있습니다.'],
@@ -42,10 +42,10 @@
       ['수집 항목', '(필수) 이름, 이메일, 비밀번호, 캠퍼스 · (선택) 소속·메모 · (자동) 로그인 일시 등 접속 기록'],
       ['이용 목적', '회원 확인과 로그인, 교재 열람 권한 관리(가입 승인, 캠퍼스별 관리), 비밀번호 재설정 등 안내 메일 발송'],
       ['보유 기간', '회원 탈퇴 시까지. 탈퇴하면 바로 삭제합니다. 단, 법령에 따라 보관해야 하는 정보는 그 기간 동안 보관합니다.'],
-      ['열람 범위', '회원의 이름·이메일·캠퍼스·메모는 담당 캠퍼스 선생님과 전체 관리자만 볼 수 있습니다. 비밀번호는 암호화되어 누구도 볼 수 없습니다.'],
+      ['열람 범위', '회원의 이름·이메일·캠퍼스·메모는 담당 캠퍼스 강사와 전체 관리자만 볼 수 있습니다. 비밀번호는 암호화되어 누구도 볼 수 없습니다.'],
       ['처리 위탁', 'Supabase Inc. — 회원 정보 저장과 로그인 처리 (저장 위치: 대한민국 서울)'],
       ['동의 거부', '동의하지 않을 수 있습니다. 다만 동의하지 않으면 회원가입과 교재 이용이 불가능합니다.'],
-      ['문의', '개인정보 열람·정정·삭제 요청은 다니는 캠퍼스의 담당 선생님께 해 주세요. 탈퇴는 ‘내 정보’에서 직접 할 수 있습니다.']]]
+      ['문의', '개인정보 열람·정정·삭제 요청은 다니는 캠퍼스의 담당 강사께 해 주세요. 탈퇴는 ‘내 정보’에서 직접 할 수 있습니다.']]]
   };
   function docHtml(k) {
     return DOCS[k][1].map(function (s) { return '<dt>' + s[0] + '</dt><dd>' + s[1] + '</dd>'; }).join('');
@@ -179,8 +179,8 @@
     });
   }
 
-  // 학생에게는 볼 수 있는 교재 카드만 남긴다 (선생님·관리자는 담당 캠퍼스 교재 모두).
-  //   a.stage.sN: 그 권·반 / [data-st="5,7"]: 그 단계 중 하나라도 있으면 / .staff-only: 선생님·관리자만
+  // 학생에게는 볼 수 있는 교재 카드만 남긴다 (강사·관리자는 담당 캠퍼스 교재 모두).
+  //   a.stage.sN: 그 권·반 / [data-st="5,7"]: 그 단계 중 하나라도 있으면 / .staff-only: 강사·관리자만
   function onlyMine(root) {
     if (me.teacher) return;
     var has = function (list) { return list.some(function (n) { return me.stages.indexOf(+n) >= 0; }); };
@@ -298,7 +298,7 @@
     var nm = STAGE_NAME[st] || st + '권';
     view.innerHTML = bar(nm) + '<div class="gate"><div class="card"><h2>' + nm + ' 열람 권한이 없습니다</h2>'
       + '<p class="msg">지금 열람할 수 있는 과정: <b>' + stageTxt(me.stages) + '</b><br>'
-      + nm + ' 교재가 필요하면 담당 선생님께 요청해 주세요.</p>'
+      + nm + ' 교재가 필요하면 담당 강사께 요청해 주세요.</p>'
       + '<p class="row"><a class="btn" href="#/">처음으로</a><button class="btn ghost" type="button" data-act="recheck">권한 다시 확인</button></p></div></div>';
     addUserMenu();
   }
@@ -307,7 +307,7 @@
     view.dataset.path = '';
     view.innerHTML = bar() + '<div class="gate"><div class="card"><h2>승인 대기 중입니다</h2>'
       + '<p class="msg"><b>' + esc(me.user.email) + '</b> 계정으로 <b>' + esc(campusTxt(me.campuses)) + '</b> 캠퍼스에 가입 신청이 접수되었습니다.<br>'
-      + '담당 선생님이 볼 수 있는 권(과정)을 열어 주면 교재가 열립니다. 연락을 받으면 ‘승인 확인’을 눌러 주세요.</p>'
+      + '담당 강사가 볼 수 있는 권(과정)을 열어 주면 교재가 열립니다. 연락을 받으면 ‘승인 확인’을 눌러 주세요.</p>'
       + '<p class="row"><button class="btn" type="button" data-act="recheck">승인 확인</button>'
       + '<a class="btn ghost" href="#/me">캠퍼스 변경</a>'
       + '<button class="btn ghost" type="button" data-act="logout">로그아웃</button></p></div></div>';
@@ -339,7 +339,7 @@
   function meView() {
     window.cipPlayer.reset();
     view.dataset.path = 'me';
-    var role = me.admin ? '전체 관리자' : me.teacher ? '선생님' : '학생';
+    var role = me.admin ? '전체 관리자' : me.teacher ? '강사' : '학생';
     var multi = me.profile.role === 'teacher';
     var pick = me.admin ? '<p class="msg">전체 관리자는 모든 캠퍼스를 관리하므로 캠퍼스를 따로 고르지 않습니다.</p>'
       : '<form data-form="campus"><fieldset class="pick"><legend>' + (multi ? '담당 캠퍼스 <small>여러 곳 고를 수 있습니다</small>' : '소속 캠퍼스') + '</legend>'
@@ -348,7 +348,7 @@
             + (me.campuses.indexOf(c) >= 0 ? ' checked' : '') + '><span>' + esc(c) + '</span></label>';
         }).join('') + '</fieldset>'
         + '<p class="msg sm">' + (multi ? '담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
-          : '캠퍼스를 옮기면 새 캠퍼스 선생님이 관리합니다. 열람 중인 권은 그대로 유지됩니다.') + '</p>'
+          : '캠퍼스를 옮기면 새 캠퍼스 강사가 관리합니다. 열람 중인 권은 그대로 유지됩니다.') + '</p>'
         + '<button class="btn" type="submit">저장</button><p class="note" role="status"></p></form>';
     view.innerHTML = bar('내 정보') + '<div class="gate"><div class="card"><h2>내 정보</h2>'
       + '<dl class="kv"><dt>이름</dt><dd>' + esc(me.profile.name || '-') + '</dd><dt>이메일</dt><dd>' + esc(me.user.email) + '</dd>'
@@ -397,10 +397,10 @@
     });
   }
 
-  // ---------------------------------------------------------------- 회원 관리 (선생님·전체 관리자)
-  // 선생님: 학생마다 1~4권 열람 권한을 켜고 끈다. 전체 관리자: 여기에 더해 선생님 지정·해제.
+  // ---------------------------------------------------------------- 회원 관리 (강사·전체 관리자)
+  // 강사: 학생마다 1~4권 열람 권한을 켜고 끈다. 전체 관리자: 여기에 더해 강사 지정·해제.
   // 탭: 승인 대기(단계를 꼭 골라 봄: 그 단계가 ‘다음 차례’인 학생 = 열린 가장 높은 단계 + 1, 새 가입자는 신청 단계)
-  //      · 수강생 · 휴강생(4개월 무승인, 서버 계산 on_leave) · 선생님 · 전체.  이름 검색은 모든 탭에 걸린다.
+  //      · 수강생 · 휴강생(4개월 무승인, 서버 계산 on_leave) · 강사 · 전체.  이름 검색은 모든 탭에 걸린다.
   var adminFilter = 'wait', campusFilter = '', waitStage = 0, nameQuery = '', COLS = '*,on_leave,wait_stage';
   function waitChoices(mine) {   // 고른 캠퍼스(없으면 담당 캠퍼스 전부)의 단계 + 강사 신청(전체 관리자만)
     var cs = campusFilter ? [campusFilter] : mine, list = [];
@@ -410,14 +410,14 @@
   }
   function adminView() {
     window.cipPlayer.reset();
-    var tabs = [['wait', '승인 대기'], ['ok', '수강생'], ['leave', '휴강생'], ['teacher', '선생님'], ['all', '전체']];
+    var tabs = [['wait', '승인 대기'], ['ok', '수강생'], ['leave', '휴강생'], ['teacher', '강사'], ['all', '전체']];
     var mine = me.admin ? CAMPUSES : me.campuses;
     if (mine.indexOf(campusFilter) < 0) campusFilter = '';
     var wc = waitChoices(mine);
     if (wc.indexOf(waitStage) < 0) waitStage = wc[0];
     view.innerHTML = bar('회원 관리') + '<main class="index admin"><div class="card wide"><h2>회원 관리</h2>'
-      + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 선생님은 먼저 회원가입(신청 단계 ‘강사’)을 한 뒤, 승인 대기의 ‘강사’에서 ‘선생님 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
-        : mine.length ? '<b>' + esc(mine.join(' · ')) + '</b> 캠퍼스 담당 선생님입니다. 담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
+      + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 강사는 먼저 회원가입(신청 단계 ‘강사’)을 한 뒤, 승인 대기의 ‘강사’에서 ‘강사 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
+        : mine.length ? '<b>' + esc(mine.join(' · ')) + '</b> 캠퍼스 담당 강사입니다. 담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
         : '<b>담당 캠퍼스가 아직 지정되지 않았습니다.</b> 전체 관리자에게 캠퍼스 지정을 요청해 주세요.')
       + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. 마지막 승인 뒤 4개월 동안 다음 단계가 열리지 않으면 휴강생이 되고, 학생이 직접 ‘재수강’을 눌러야 풀립니다.</p>'
       + (mine.length > 1 ? '<div class="cfilter"><span>캠퍼스</span>' + [''].concat(mine).map(function (c) {
@@ -463,13 +463,13 @@
     if (p.role === 'admin') {
       ctl = '<span class="badge">전체 관리자</span>';
     } else if (p.role === 'teacher') {
-      ctl = '<span class="badge">선생님 · 전 단계</span>'
+      ctl = '<span class="badge">강사 · 전 단계</span>'
         + (me.admin ? '<div class="stg camp">' + CAMPUSES.map(function (c) {      // 담당 캠퍼스: 여러 곳
             var on = p.campuses.indexOf(c) >= 0;
             return '<button type="button" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '" data-tcampus="' + esc(c) + '" data-id="' + p.id
               + '" data-cur="' + esc(p.campuses.join(',')) + '">' + esc(c) + '</button>';
           }).join('') + '</div>'
-          + '<button class="lnk" type="button" data-role="student" data-id="' + p.id + '" data-cur="' + esc(p.campuses.join(',')) + '">선생님 해제</button>'
+          + '<button class="lnk" type="button" data-role="student" data-id="' + p.id + '" data-cur="' + esc(p.campuses.join(',')) + '">강사 해제</button>'
           : '');
     } else {
       ctl = (p.on_leave ? '<span class="badge leave">휴강 중 · 학생 재수강 대기</span>' : '')
@@ -482,7 +482,7 @@
         + (p.campuses.length ? '' : '<option value="" selected>미지정</option>')
         + CAMPUSES.map(function (c) { return '<option' + (p.campuses[0] === c ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('')
         + '</select></label>'
-        + (me.admin ? '<button class="lnk" type="button" data-role="teacher" data-id="' + p.id + '">선생님 지정</button>' : '') + '</div>';
+        + (me.admin ? '<button class="lnk" type="button" data-role="teacher" data-id="' + p.id + '">강사 지정</button>' : '') + '</div>';
     }
     var st = p.role !== 'student' ? ''
       : p.want_teacher && !p.stages.length ? '<span class="tbadge">강사 신청</span>'
@@ -625,9 +625,9 @@
     if (t.dataset.stage) return toggleStage(t);
     if (t.dataset.tcampus) return toggleTeacherCampus(t);
     if (t.dataset.role === 'teacher') return saveMember(t, { role: 'teacher' },
-      '이 회원을 선생님으로 지정할까요? 모든 권을 볼 수 있고, 담당 캠퍼스 학생에게 권 열람 권한을 줄 수 있게 됩니다.\n(지금 캠퍼스가 담당 캠퍼스로 지정되며, 나중에 바꿀 수 있습니다)');
+      '이 회원을 강사로 지정할까요? 모든 권을 볼 수 있고, 담당 캠퍼스 학생에게 권 열람 권한을 줄 수 있게 됩니다.\n(지금 캠퍼스가 담당 캠퍼스로 지정되며, 나중에 바꿀 수 있습니다)');
     if (t.dataset.role === 'student') return saveMember(t, { role: 'student', campuses: (t.dataset.cur || '').split(',').filter(Boolean).slice(0, 1) },
-      '선생님 권한을 해제할까요? 학생 계정으로 돌아가며(캠퍼스는 한 곳만 남습니다), 볼 수 있는 권은 따로 열어 주어야 합니다.');
+      '강사 권한을 해제할까요? 학생 계정으로 돌아가며(캠퍼스는 한 곳만 남습니다), 볼 수 있는 권은 따로 열어 주어야 합니다.');
     if (t.dataset.act === 'logout') return sb.auth.signOut();
     if (t.dataset.act === 'resume') return resume(t);
     if (t.dataset.act === 'recheck') { view.dataset.path = ''; return loadMe(me.user).then(route); }
