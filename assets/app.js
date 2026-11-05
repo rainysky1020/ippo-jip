@@ -410,16 +410,16 @@
   }
   function adminView() {
     window.cipPlayer.reset();
-    var tabs = [['wait', '승인 대기'], ['ok', '수강생'], ['leave', '휴강생'], ['teacher', '강사'], ['all', '전체']];
+    var tabs = [['wait', '대기'], ['ok', '수강'], ['leave', '휴강'], ['teacher', '강사'], ['all', '전체']];
     var mine = me.admin ? CAMPUSES : me.campuses;
     if (mine.indexOf(campusFilter) < 0) campusFilter = '';
     var wc = waitChoices(mine);
     if (wc.indexOf(waitStage) < 0) waitStage = wc[0];
     view.innerHTML = bar('회원 관리') + '<main class="index admin"><div class="card wide"><h2>회원 관리</h2>'
-      + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 강사는 먼저 회원가입(신청 단계 ‘강사’)을 한 뒤, 승인 대기의 ‘강사’에서 ‘강사 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
+      + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 강사는 먼저 회원가입(신청 단계 ‘강사’)을 한 뒤, ‘대기’ 탭의 ‘강사’에서 ‘강사 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
         : mine.length ? '<b>' + esc(mine.join(' · ')) + '</b> 캠퍼스 담당 강사입니다. 담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
         : '<b>담당 캠퍼스가 아직 지정되지 않았습니다.</b> 전체 관리자에게 캠퍼스 지정을 요청해 주세요.')
-      + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. 마지막 승인 뒤 4개월 동안 다음 단계가 열리지 않으면 휴강생이 되고, 학생이 직접 ‘재수강’을 눌러야 풀립니다.</p>'
+      + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. 마지막 승인 뒤 4개월 동안 다음 단계가 열리지 않으면 ‘휴강’으로 옮겨지고, 학생이 직접 ‘재수강’을 눌러야 풀립니다.</p>'
       + (mine.length > 1 ? '<div class="cfilter"><span>캠퍼스</span>' + [''].concat(mine).map(function (c) {
           return '<button type="button" data-cfilter="' + esc(c) + '"' + (c === campusFilter ? ' class="on"' : '') + '>' + (c ? esc(c) : '전체') + '</button>';
         }).join('') + '</div>' : '')
