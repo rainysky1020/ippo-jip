@@ -401,7 +401,7 @@
   // 강사: 학생마다 1~4권 열람 권한을 켜고 끈다. 전체 관리자: 여기에 더해 강사 지정·해제.
   // 탭: 승인 대기(단계를 꼭 골라 봄: 그 단계가 ‘다음 차례’인 학생 = 열린 가장 높은 단계 + 1, 새 가입자는 신청 단계)
   //      · 수강생 · 휴강생(4개월 무승인, 서버 계산 on_leave) · 강사 · 전체.  이름 검색은 모든 탭에 걸린다.
-  var adminFilter = 'wait', campusFilter = '', waitStage = 0, nameQuery = '', COLS = '*,on_leave,wait_stage';
+  var adminFilter = 'wait', campusFilter = '', waitStage = 0, nameQuery = '', COLS = '*,on_leave,wait_stage,approved_this_month';
   function waitChoices(mine) {   // 고른 캠퍼스(없으면 담당 캠퍼스 전부)의 단계 + 강사 신청(전체 관리자만)
     var cs = campusFilter ? [campusFilter] : mine, list = [];
     cs.forEach(function (c) { stagesFor([c]).forEach(function (n) { if (list.indexOf(n) < 0) list.push(n); }); });
@@ -419,7 +419,7 @@
       + '<p class="msg">' + (me.admin ? '<b>전체 관리자</b> 계정입니다. 모든 캠퍼스의 회원을 관리합니다. 강사는 먼저 회원가입(신청 단계 ‘강사’)을 한 뒤, ‘대기’ 탭의 ‘강사’에서 ‘강사 지정’을 누르고 담당 캠퍼스를 고르면 됩니다.'
         : mine.length ? '<b>' + esc(mine.join(' · ')) + '</b> 캠퍼스 담당 강사입니다. 담당 캠퍼스의 학생만 보이고 관리할 수 있습니다.'
         : '<b>담당 캠퍼스가 아직 지정되지 않았습니다.</b> 전체 관리자에게 캠퍼스 지정을 요청해 주세요.')
-      + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. 마지막 승인 뒤 4개월 동안 다음 단계가 열리지 않으면 ‘휴강’으로 옮겨지고, 학생이 직접 ‘재수강’을 눌러야 풀립니다.</p>'
+      + ' 학생 줄의 권·과정 단추를 누르면 그 교재가 열리거나 닫힙니다. 마지막 승인 뒤 4개월 동안 다음 단계가 열리지 않으면 ‘휴강’으로 옮겨지고, 학생이 직접 ‘재수강’을 눌러야 풀립니다. ‘대기’에는 이번 달에 단계 승인을 받은 학생은 나오지 않습니다(다음 달 1일부터 다시 나옵니다).</p>'
       + (mine.length > 1 ? '<div class="cfilter"><span>캠퍼스</span>' + [''].concat(mine).map(function (c) {
           return '<button type="button" data-cfilter="' + esc(c) + '"' + (c === campusFilter ? ' class="on"' : '') + '>' + (c ? esc(c) : '전체') + '</button>';
         }).join('') + '</div>' : '')
@@ -439,7 +439,7 @@
     if (adminFilter === 'wait' && waitStage == null) { view.querySelector('.list').innerHTML = '<p class="msg">담당 캠퍼스가 정해지면 볼 수 있습니다.</p>'; return; }
     var q = sb.from('profiles').select(COLS).order('created_at', { ascending: false });
     if (adminFilter === 'wait') q = waitStage === 't' ? q.eq('role', 'student').eq('want_teacher', true).eq('stages', '{}')
-      : q.eq('role', 'student').eq('on_leave', false).eq('wait_stage', waitStage);
+      : q.eq('role', 'student').eq('on_leave', false).eq('wait_stage', waitStage).eq('approved_this_month', false);   // 이번 달 승인한 학생은 빼고
     if (adminFilter === 'ok') q = q.eq('role', 'student').neq('stages', '{}').eq('on_leave', false);
     if (adminFilter === 'leave') q = q.eq('role', 'student').eq('on_leave', true);
     if (adminFilter === 'teacher') q = q.eq('role', 'teacher');
@@ -516,7 +516,7 @@
       if (campusFilter && p.campuses.indexOf(campusFilter) < 0) { row.outerHTML = memberRow(p).replace('class="mem"', 'class="mem moved"'); return; }
       var keep = adminFilter === 'all'
         || (adminFilter === 'teacher' && p.role === 'teacher')
-        || (adminFilter === 'wait' && p.role === 'student' && !p.on_leave && (waitStage === 't' ? p.want_teacher && !p.stages.length : p.wait_stage === waitStage))
+        || (adminFilter === 'wait' && p.role === 'student' && !p.on_leave && (waitStage === 't' ? p.want_teacher && !p.stages.length : p.wait_stage === waitStage && !p.approved_this_month))
         || (adminFilter === 'ok' && p.role === 'student' && p.stages.length > 0 && !p.on_leave)
         || (adminFilter === 'leave' && p.role === 'student' && p.on_leave);
       if (keep) row.outerHTML = memberRow(p);
